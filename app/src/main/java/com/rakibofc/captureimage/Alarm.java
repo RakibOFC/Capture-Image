@@ -20,9 +20,7 @@ public class Alarm extends BroadcastReceiver {
         String extra = intent.getStringExtra("extra");
         Toast.makeText(context, extra, Toast.LENGTH_SHORT).show();
 
-        // pushNotification(context, "Prayer Time Alert", "contentTitle", "contentText", 111);
         addNotification(context, "Notification");
-        // notification.notify();
     }
 
     private void addNotification(Context context, String channelId) {
@@ -34,7 +32,7 @@ public class Alarm extends BroadcastReceiver {
                     channelId,
                     NotificationManager.IMPORTANCE_LOW
             );
-            channel.setShowBadge(false);
+            channel.setShowBadge(true);
             context.getSystemService(NotificationManager.class).createNotificationChannel(channel);
         }
 
@@ -44,7 +42,7 @@ public class Alarm extends BroadcastReceiver {
                         .setContentTitle("Notifications Example") //set title of notification
                         .setContentText("This is a notification message")//this is notification message
                         .setAutoCancel(true) // makes auto cancel of notification
-                        .setPriority(NotificationCompat.PRIORITY_DEFAULT); //set priority of notification
+                        .setPriority(NotificationCompat.PRIORITY_HIGH); //set priority of notification
 
 
         Intent notificationIntent = new Intent(context, MainActivity.class);
