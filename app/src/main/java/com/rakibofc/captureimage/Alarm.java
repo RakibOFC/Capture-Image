@@ -24,9 +24,9 @@ public class Alarm extends BroadcastReceiver {
         String extra = intent.getStringExtra("extra");
         Toast.makeText(context, extra, Toast.LENGTH_SHORT).show();
 
-        addNotification(context, "Notification");
+        // addNotification(context, "Notification");
 
-        // pushNotification(context, "Prayer Time Alert", "contentTitle", "contentText", 11111);
+        context.startService(new Intent(context, MyService.class));
     }
 
     private void addNotification(Context context, String channelId) {
@@ -63,33 +63,5 @@ public class Alarm extends BroadcastReceiver {
         // Add as notification
         NotificationManager manager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         manager.notify(0, builder.build());
-    }
-
-    public Notification pushNotification(Context context, String channelId, String title, String message, int requestCode) {
-
-        NotificationManager mNotificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-            NotificationChannel notificationChannel = new NotificationChannel(
-                    channelId,
-                    channelId,
-                    NotificationManager.IMPORTANCE_HIGH);
-            notificationChannel.setDescription("This is prayer reminder notification");
-            mNotificationManager.createNotificationChannel(notificationChannel);
-        }
-
-        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context, channelId)
-                .setSmallIcon(R.mipmap.ic_launcher)
-                .setContentTitle(title)
-                .setContentText(message)
-                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-                .setAutoCancel(true);
-
-        Intent intent = new Intent(context, MainActivity.class);
-        @SuppressLint("InlinedApi") PendingIntent pendingIntent = PendingIntent.getActivity(context, requestCode, intent, PendingIntent.FLAG_IMMUTABLE);
-        mBuilder.setContentIntent(pendingIntent);
-        mNotificationManager.notify(requestCode, mBuilder.build());
-
-        return mBuilder.build();
     }
 }

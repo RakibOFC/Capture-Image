@@ -2,6 +2,7 @@ package com.rakibofc.captureimage;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.annotation.SuppressLint;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -10,6 +11,9 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.Toast;
 
 import java.util.Calendar;
 
@@ -20,33 +24,29 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        Button button = findViewById(R.id.button);
+        int requestCode = 1111;
+
         Intent intent = new Intent(getApplicationContext(), Alarm.class);
-        intent.putExtra("extra", "Some extra");
-        PendingIntent pendingIntent;
-        // pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), 800000, intent, 0);
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
-            pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), 800000, intent, PendingIntent.FLAG_IMMUTABLE);
-        } else {
-            pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), 800000, intent, 0); // 0
-        }
+        @SuppressLint("InlinedApi") PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), requestCode, intent,PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
 
         AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
-        // alarmManager.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + 5000, 60000, pendingIntent);
 
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTimeInMillis(System.currentTimeMillis());
-        calendar.set(Calendar.HOUR_OF_DAY, 10);
-        calendar.set(Calendar.MINUTE, 46);
-        calendar.set(Calendar.SECOND, 20);
+        button.setOnClickListener(v -> {
 
-        // alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), 60000, pendingIntent); // work on Android 12.0 or lower
+            try {
+                if (alarmManager!= null) {
+                    alarmManager.cancel(pendingIntent);
+                    pendingIntent.cancel();
+                    Toast.makeText(MainActivity.this, "Canceled" + requestCode, Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(MainActivity.this, "Canceled" + requestCode, Toast.LENGTH_SHORT).show();
+                }
+            } catch (Exception e) {
+                Toast.makeText(MainActivity.this, "Canceled" + requestCode, Toast.LENGTH_SHORT).show();
+            }
+        });
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            // alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + 5000, pendingIntent); // Test Passed
-            alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
-        } else {
-            // alarmManager.setExact(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + 5000, pendingIntent); // Test Passed
-            alarmManager.setExact(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
-        }
+        startService(new Intent(getApplicationContext(), MyService.class));
     }
 }
